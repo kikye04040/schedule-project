@@ -1,13 +1,15 @@
 package com.sparta.planmanager.repository;
 
+import com.sparta.planmanager.dto.PlanResponseDto;
 import com.sparta.planmanager.entity.Plan;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.List;
 
 @Repository
 public class PlanRepository {
@@ -33,5 +35,26 @@ public class PlanRepository {
         plan.setId(id);
 
         return plan;
+    }
+
+    public Plan findById(Long id) {
+        // DB 조회
+        String sql = "SELECT * FROM memo WHERE id = ?";
+
+        return jdbcTemplate.query(sql, resultSet -> {
+            if(resultSet.next()) {
+                Plan plan = new Plan();
+                plan.setId(resultSet.getLong("id"));
+                plan.setTodo(resultSet.getString("todo"));
+                plan.setManagername(resultSet.getString("managername"));
+                plan.setPassword(resultSet.getString("password"));
+                plan.setDate(resultSet.getString("date"));
+                plan.setCreateAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+                plan.setUpdateAt(resultSet.getTimestamp("updated_at").toLocalDateTime());
+                return plan;
+            } else {
+                return null;
+            }
+        }, id);
     }
 }
