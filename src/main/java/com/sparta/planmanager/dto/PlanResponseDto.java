@@ -8,6 +8,8 @@ public class PlanResponseDto {
     private String managername;
     private String password;
     private String date;
+    private String createAt;
+    private String updateAt;
 
     public PlanResponseDto(Plan plan) {
         this.id = plan.getId();
@@ -15,6 +17,8 @@ public class PlanResponseDto {
         this.managername = plan.getManagername();
         this.password = plan.getPassword();
         this.date = plan.getDate();
+        this.createAt = plan.getCreateAt().toString(); // 작성일
+        this.updateAt = plan.getUpdateAt().toString();
     }
 
     public PlanResponseDto(Long id, String todo, String managername, String password, String date) {
