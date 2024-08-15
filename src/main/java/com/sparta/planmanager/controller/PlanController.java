@@ -20,4 +20,11 @@ public class PlanController {
     public PlanResponseDto createPlan(@RequestBody PlanRequestDto requestDto) {
         return planService.createPlan(requestDto);
     }
+
+    @GetMapping("/plans")
+    public List<PlanResponseDto> getAllPlans(
+        @RequestParam(required = false) String managername,
+        @RequestParam(required = false) String updateAt) {
+    return planService.getAllPlans(managername, updateAt);
+    }
 }

@@ -6,6 +6,9 @@ import com.sparta.planmanager.entity.Plan;
 import com.sparta.planmanager.repository.PlanRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class PlanService {
     private final PlanRepository planRepository;
@@ -22,5 +25,10 @@ public class PlanService {
         PlanResponseDto planResponseDto = new PlanResponseDto(plan);
 
         return planResponseDto;
+    }
+
+    public List<PlanResponseDto> getAllPlans(String managername, String updateAt) {
+        List<Plan> plans = planRepository.findAllByConditions(managername, updateAt);
+        return plans.stream().map(PlanResponseDto::new).collect(Collectors.toList());
     }
 }

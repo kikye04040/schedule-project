@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -35,6 +36,52 @@ public class PlanRepository {
         plan.setId(id);
 
         return plan;
+    }
+
+    public List<Plan> findAllByConditions(String managername, String updateAt) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM plan");
+
+        boolean hasManagerName = managername != null && !managername.isEmpty();
+        boolean hasUpdateAt = updateAt != null && !updateAt.isEmpty();
+
+        if (hasManagerName || hasUpdateAt) {
+            sql.append(" WHERE");
+
+            if (hasManagerName) {
+                sql.append(" managername = ?");
+            }
+
+            if (hasUpdateAt) {
+                if (hasManagerName) {
+                    sql.append(" AND");
+                }
+                sql.append(" DATE(update_at) = ?");
+            }
+        }
+        sql.append(" ORDER BY updated_at DESC");
+
+        List<Object> params = new ArrayList<>();
+        if (hasManagerName) {
+            params.add(managername);
+        }
+        if (hasUpdateAt) {
+            params.add(updateAt);
+        }
+
+        return jdbcTemplate.query(sql.toString(), new RowMapper<Plan>() {
+            @Override
+            public Plan mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Plan plan = new Plan();
+                plan.setId(rs.getLong("id"));
+                plan.setTodo(rs.getString("todo"));
+                plan.setManagername(rs.getString("managername"));
+                plan.setPassword(rs.getString("password"));
+                plan.setDate(rs.getString("date"));
+                plan.setCreateAt(rs.getTimestamp("created_at").toLocalDateTime());
+                plan.setUpdateAt(rs.getTimestamp("updated_at").toLocalDateTime());
+                return plan;
+            }
+        });
     }
 
     public Plan findById(Long id) {

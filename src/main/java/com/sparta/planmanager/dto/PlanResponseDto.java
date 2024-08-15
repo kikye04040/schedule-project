@@ -1,7 +1,9 @@
 package com.sparta.planmanager.dto;
 
 import com.sparta.planmanager.entity.Plan;
+import lombok.Getter;
 
+@Getter
 public class PlanResponseDto {
     private Long id;
     private String todo;
@@ -21,11 +23,13 @@ public class PlanResponseDto {
         this.updateAt = plan.getUpdateAt().toString();
     }
 
-    public PlanResponseDto(Long id, String todo, String managername, String password, String date) {
+    public PlanResponseDto(Long id, String todo, String managername, String password, String date, String createAt, String updateAt) {
         this.id = id;
         this.todo = todo;
         this.managername = managername;
         this.password = password;
         this.date = date;
+        this.createAt = createAt;
+        this.updateAt = updateAt;
     }
 }
