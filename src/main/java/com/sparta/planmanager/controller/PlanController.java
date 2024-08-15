@@ -27,4 +27,11 @@ public class PlanController {
         @RequestParam(required = false) String updateAt) {
     return planService.getAllPlans(managername, updateAt);
     }
+
+    @PutMapping("/plans/{id}")
+    public PlanResponseDto updatePlan(
+            @RequestParam Long id,
+            @RequestBody PlanRequestDto requestDto) {
+        return planService.updatePlan(id, requestDto);
+    }
 }

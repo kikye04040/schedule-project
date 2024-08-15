@@ -84,6 +84,15 @@ public class PlanRepository {
         });
     }
 
+    public void update(Plan plan) {
+        String sql = "UPDATE plan SET todo = ?, managername = ?, password = ?, date = ? WHERE id = ?";
+        jdbcTemplate.update(sql,
+                plan.getTodo(),
+                plan.getManagername(),
+                plan.getPassword(),
+                plan.getDate());
+    }
+
     public Plan findById(Long id) {
         // DB 조회
         String sql = "SELECT * FROM memo WHERE id = ?";
