@@ -6,6 +6,9 @@ import com.sparta.planmanager.entity.Plan;
 import com.sparta.planmanager.exception.IncorrectPasswordException;
 import com.sparta.planmanager.exception.PlanNotFoundException;
 import com.sparta.planmanager.repository.PlanRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,13 +34,8 @@ public class PlanService {
     }
 
     public List<PlanResponseDto> getAllPlans(Long managerId, String updateAt, int pageNumber, int pageSize) {
-        List<Plan> plans = planRepository.findAllByConditions(managerId, updateAt, pageNumber, pageSize);
-
-        // 범위를 벗어난 페이지 요청 시 빈 리스트 반환
-        if (plans.isEmpty() && pageNumber > 1) {
-            return List.of();
-        }
-
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        List<Plan> plans = planRepository.findAllByConditions(managerId, updateAt, pageable);
         return plans.stream().map(PlanResponseDto::new).collect(Collectors.toList());
     }
 
