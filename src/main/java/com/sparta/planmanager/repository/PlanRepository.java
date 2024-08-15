@@ -20,15 +20,18 @@ public class PlanRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // Plan 저장 메서드
     public Plan save(Plan plan) {
         KeyHolder keyHolder = new GeneratedKeyHolder(); // 기본 키를 반환받기 위한 객체
-        String sql = "INSERT INTO plan (todo, managername, password, date) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO plan (todo, manager_id, password, date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(con ->  {
             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, plan.getTodo());
-            ps.setString(2, plan.getManagername());
+            ps.setLong(2, plan.getManagerId());
             ps.setString(3, plan.getPassword());
             ps.setString(4, plan.getDate());
+            ps.setTimestamp(5, Timestamp.valueOf(plan.getCreateAt()));
+            ps.setTimestamp(6, Timestamp.valueOf(plan.getUpdateAt()));
             return ps;
         }, keyHolder);
 
@@ -38,21 +41,21 @@ public class PlanRepository {
         return plan;
     }
 
-    public List<Plan> findAllByConditions(String managername, String updateAt) {
+    public List<Plan> findAllByConditions(Long managerId, String updateAt) {
         StringBuilder sql = new StringBuilder("SELECT * FROM plan");
 
-        boolean hasManagerName = managername != null && !managername.isEmpty();
+        boolean hasManagerId = managerId != null;
         boolean hasUpdateAt = updateAt != null && !updateAt.isEmpty();
 
-        if (hasManagerName || hasUpdateAt) {
+        if (hasManagerId || hasUpdateAt) {
             sql.append(" WHERE");
 
-            if (hasManagerName) {
-                sql.append(" managername = ?");
+            if (hasManagerId) {
+                sql.append(" manager_id = ?");
             }
 
             if (hasUpdateAt) {
-                if (hasManagerName) {
+                if (hasManagerId) {
                     sql.append(" AND");
                 }
                 sql.append(" DATE(update_at) = ?");
@@ -61,8 +64,8 @@ public class PlanRepository {
         sql.append(" ORDER BY updated_at DESC");
 
         List<Object> params = new ArrayList<>();
-        if (hasManagerName) {
-            params.add(managername);
+        if (hasManagerId) {
+            params.add(managerId);
         }
         if (hasUpdateAt) {
             params.add(updateAt);
@@ -74,7 +77,7 @@ public class PlanRepository {
                 Plan plan = new Plan();
                 plan.setId(rs.getLong("id"));
                 plan.setTodo(rs.getString("todo"));
-                plan.setManagername(rs.getString("managername"));
+                plan.setManagerId(rs.getLong("manager_id"));
                 plan.setPassword(rs.getString("password"));
                 plan.setDate(rs.getString("date"));
                 plan.setCreateAt(rs.getTimestamp("created_at").toLocalDateTime());
@@ -85,12 +88,14 @@ public class PlanRepository {
     }
 
     public void update(Plan plan) {
-        String sql = "UPDATE plan SET todo = ?, managername = ?, password = ?, date = ? WHERE id = ?";
+        String sql = "UPDATE plan SET todo = ?, manager_id = ?, password = ?, date = ?, updated_at = ? WHERE id = ?";
         jdbcTemplate.update(sql,
                 plan.getTodo(),
-                plan.getManagername(),
+                plan.getManagerId(),
                 plan.getPassword(),
-                plan.getDate());
+                plan.getDate(),
+                Timestamp.valueOf(plan.getUpdateAt()),
+                plan.getId());
     }
 
     public void delete(Long id) {
@@ -107,7 +112,7 @@ public class PlanRepository {
                 Plan plan = new Plan();
                 plan.setId(resultSet.getLong("id"));
                 plan.setTodo(resultSet.getString("todo"));
-                plan.setManagername(resultSet.getString("managername"));
+                plan.setManagerId(resultSet.getLong("manager_id"));
                 plan.setPassword(resultSet.getString("password"));
                 plan.setDate(resultSet.getString("date"));
                 plan.setCreateAt(resultSet.getTimestamp("created_at").toLocalDateTime());

@@ -28,8 +28,8 @@ public class PlanService {
         return planResponseDto;
     }
 
-    public List<PlanResponseDto> getAllPlans(String managername, String updateAt) {
-        List<Plan> plans = planRepository.findAllByConditions(managername, updateAt);
+    public List<PlanResponseDto> getAllPlans(Long managerId, String updateAt) {
+        List<Plan> plans = planRepository.findAllByConditions(managerId, updateAt);
         return plans.stream().map(PlanResponseDto::new).collect(Collectors.toList());
     }
 
@@ -46,7 +46,7 @@ public class PlanService {
 
         // 3. 할일, 담당자명 업데이트
         plan.setTodo(planRequestDto.getTodo());
-        plan.setManagername(planRequestDto.getManagername());
+        plan.setManagerId(planRequestDto.getManagerId());
 
         // 4. 수정일을 현재 시점으로 변경
         plan.setUpdateAt(LocalDateTime.now());
