@@ -23,9 +23,9 @@ public class PlanController {
 
     @GetMapping("/plans")
     public List<PlanResponseDto> getAllPlans(
-        @RequestParam(required = false) String managername,
+        @RequestParam(required = false) Long managerId,
         @RequestParam(required = false) String updateAt) {
-    return planService.getAllPlans(managername, updateAt);
+    return planService.getAllPlans(managerId, updateAt);
     }
 
     @PutMapping("/plans/{id}")
