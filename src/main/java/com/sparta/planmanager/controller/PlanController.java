@@ -34,4 +34,12 @@ public class PlanController {
             @RequestBody PlanRequestDto requestDto) {
         return planService.updatePlan(id, requestDto);
     }
+
+    @DeleteMapping("/plans/{id}")
+    public String deletePlan(
+            @PathVariable Long id,
+            @RequestParam String password) {
+        planService.deletePlan(id, password);
+        return "일정이 삭제되었습니다.";
+    }
 }

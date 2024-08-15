@@ -93,6 +93,11 @@ public class PlanRepository {
                 plan.getDate());
     }
 
+    public void delete(Long id) {
+        String sql = "DELETE FROM plan WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
     public Plan findById(Long id) {
         // DB 조회
         String sql = "SELECT * FROM memo WHERE id = ?";

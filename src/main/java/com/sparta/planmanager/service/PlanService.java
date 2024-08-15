@@ -56,4 +56,20 @@ public class PlanService {
 
         return new PlanResponseDto(plan);
     }
+
+    public void deletePlan(Long id, String password) {
+        // 1. DB 에서 기존 일정 조회
+        Plan plan = planRepository.findById(id);
+        if (plan == null) {
+            throw new IllegalArgumentException("해당 일정이 존재하지 않습니다.");
+        }
+
+        // 2. 비밀번호 일치 여부 확인
+        if (!plan.getPassword().equals(password)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. 일정 삭제
+        planRepository.delete(id);
+    }
 }
