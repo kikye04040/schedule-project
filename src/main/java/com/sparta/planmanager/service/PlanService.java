@@ -3,6 +3,8 @@ package com.sparta.planmanager.service;
 import com.sparta.planmanager.dto.PlanRequestDto;
 import com.sparta.planmanager.dto.PlanResponseDto;
 import com.sparta.planmanager.entity.Plan;
+import com.sparta.planmanager.exception.IncorrectPasswordException;
+import com.sparta.planmanager.exception.PlanNotFoundException;
 import com.sparta.planmanager.repository.PlanRepository;
 import org.springframework.stereotype.Service;
 
@@ -43,11 +45,11 @@ public class PlanService {
         // 1. DB 에서 기존 일정 조회
         Plan plan = planRepository.findById(id);
         if (plan == null) {
-            throw new IllegalArgumentException("해당 일정이 존재하지 않습니다.");
+            throw new PlanNotFoundException("해당 일정이 존재하지 않습니다.");
         }
         // 2. 비밀번호 일치 여부 확인
         if (!plan.getPassword().equals(planRequestDto.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
         // 3. 할일, 담당자명 업데이트
@@ -67,12 +69,12 @@ public class PlanService {
         // 1. DB 에서 기존 일정 조회
         Plan plan = planRepository.findById(id);
         if (plan == null) {
-            throw new IllegalArgumentException("해당 일정이 존재하지 않습니다.");
+            throw new PlanNotFoundException("해당 일정이 존재하지 않습니다.");
         }
 
         // 2. 비밀번호 일치 여부 확인
         if (!plan.getPassword().equals(password)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
         // 3. 일정 삭제
