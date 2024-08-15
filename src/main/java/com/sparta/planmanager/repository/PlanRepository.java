@@ -1,6 +1,5 @@
 package com.sparta.planmanager.repository;
 
-import com.sparta.planmanager.dto.PlanResponseDto;
 import com.sparta.planmanager.entity.Plan;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -41,35 +40,33 @@ public class PlanRepository {
         return plan;
     }
 
-    public List<Plan> findAllByConditions(Long managerId, String updateAt) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM plan");
-
-        boolean hasManagerId = managerId != null;
-        boolean hasUpdateAt = updateAt != null && !updateAt.isEmpty();
-
-        if (hasManagerId || hasUpdateAt) {
-            sql.append(" WHERE");
-
-            if (hasManagerId) {
-                sql.append(" manager_id = ?");
-            }
-
-            if (hasUpdateAt) {
-                if (hasManagerId) {
-                    sql.append(" AND");
-                }
-                sql.append(" DATE(update_at) = ?");
-            }
-        }
-        sql.append(" ORDER BY updated_at DESC");
+    public List<Plan> findAllByConditions(Long managerId, String updateAt, int pageNumber, int pageSize) {
+        StringBuilder sql = new StringBuilder("SELECT p.*, m.name as manager_name FROM plan p JOIN manager m ON p.manager_id = m.id");
 
         List<Object> params = new ArrayList<>();
-        if (hasManagerId) {
-            params.add(managerId);
+        boolean hasConditions = (managerId != null) || (updateAt != null && !updateAt.isEmpty());
+
+        if (hasConditions) {
+            sql.append(" WHERE ");
+            if (managerId != null) {
+                sql.append(" m.id = ?");
+                params.add(managerId);
+            }
+            if (updateAt != null && !updateAt.isEmpty()) {
+                if (managerId != null) {
+                    sql.append(" AND");
+                }
+                sql.append(" DATE(p.updated_at) = ?");
+                params.add(updateAt);
+            }
         }
-        if (hasUpdateAt) {
-            params.add(updateAt);
-        }
+
+        sql.append(" ORDER BY p.updated_at DESC");
+        sql.append(" LIMIT ? OFFSET ?");
+
+        int offset = (pageNumber - 1) * pageSize;
+        params.add(pageSize);
+        params.add(offset);
 
         return jdbcTemplate.query(sql.toString(), new RowMapper<Plan>() {
             @Override

@@ -24,8 +24,10 @@ public class PlanController {
     @GetMapping("/plans")
     public List<PlanResponseDto> getAllPlans(
         @RequestParam(required = false) Long managerId,
-        @RequestParam(required = false) String updateAt) {
-    return planService.getAllPlans(managerId, updateAt);
+        @RequestParam(required = false) String updateAt,
+        @RequestParam(defaultValue = "1") int pageNumber,
+        @RequestParam(defaultValue = "10") int pageSize){
+    return planService.getAllPlans(managerId, updateAt, pageNumber, pageSize);
     }
 
     @PutMapping("/plans/{id}")

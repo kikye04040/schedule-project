@@ -28,8 +28,14 @@ public class PlanService {
         return planResponseDto;
     }
 
-    public List<PlanResponseDto> getAllPlans(Long managerId, String updateAt) {
-        List<Plan> plans = planRepository.findAllByConditions(managerId, updateAt);
+    public List<PlanResponseDto> getAllPlans(Long managerId, String updateAt, int pageNumber, int pageSize) {
+        List<Plan> plans = planRepository.findAllByConditions(managerId, updateAt, pageNumber, pageSize);
+
+        // 범위를 벗어난 페이지 요청 시 빈 리스트 반환
+        if (plans.isEmpty() && pageNumber > 1) {
+            return List.of();
+        }
+
         return plans.stream().map(PlanResponseDto::new).collect(Collectors.toList());
     }
 
