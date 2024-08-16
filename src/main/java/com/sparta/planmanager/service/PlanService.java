@@ -35,7 +35,7 @@ public class PlanService {
 
     public List<PlanResponseDto> getAllPlans(Long managerId, String updateAt, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        List<Plan> plans = planRepository.findAllByConditions(managerId, updateAt, pageable);
+        List<Plan> plans = planRepository.findAllByConditions(managerId, updateAt, pageNumber, pageSize);
         return plans.stream().map(PlanResponseDto::new).collect(Collectors.toList());
     }
 
